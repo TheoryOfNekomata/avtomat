@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Avtomat &mdash; Demo</title>
+	<script type="text/javascript" src="avtomat-1.0.min.js"></script>
+</head>
+<body>
+	<h1>Avtomat &mdash; Demo</h1>
+	<script type="text/javascript">
+		var automaton = new Avtomat.StateMachine({
+			"start": { "final": false, "transitions": { "3": "three" } },
+			"one": { "final": false, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } },
+			"two": { "final": true, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } },
+			"three": { "final": false, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } },
+			"four": { "final": true, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } },
+			"five": { "final": false, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } }
+		});
+		
+		function checkInput(inputStr) {
+			automaton.reset();
+			for(var i = 0; i < inputStr.length; i++)
+				automaton.input(inputStr.charAt(i));
+			return automaton.accepted();
+		}
+		
+		function displayInputCheck() {
+			document.getElementById("result").innerHTML = (checkInput(document.getElementById("tbInput").value) ? "accepted": "rejected");
+		}
+	</script>
+	<p>Please type a string that:</p>
+	<ul>
+		<li>contains only "1", "2", "3", "4", and "5"</li>
+		<li>begins with "3"</li>
+		<li>ends in either "2" or "4"</li>
+	</ul>
+	<input type="text" id="tbInput"> <input type="button" value="Check" onclick="displayInputCheck()">
+	<p><strong>Result:</strong> String is <em id="result">________</em>.</p>
+</body>
+</html>

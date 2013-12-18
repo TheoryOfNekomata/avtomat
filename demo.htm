@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Avtomat &mdash; Demo</title>
+	<script type="text/javascript" src="avtomat-1.0.min.js"></script>
+</head>
+<body>
+	<h1>Avtomat &mdash; Demo</h1>
+	<h2>Look at your developer console.</h2>
+	<script type="text/javascript">
+		var automaton = new Avtomat.StateMachine({
+			"A": {
+				"final": false, "transitions": {
+					"b": "B",
+					"c": ["C", "D"],
+					"d": "A",
+					"": "E"
+				}
+			},
+			"B": {
+				"final": false, "transitions": {
+					"a": "A",
+					"c": "C",
+					"d": "E"
+				}
+			},
+			"C": {
+				"final": false,
+				"transitions": {
+					"": "A"
+				}
+			},
+			"D": {
+				"final": true,
+				"transitions": {
+					"a": "D",
+					"b": "E",
+					"c": ["B", "D"],
+					"d": "D",
+					"e": "E"
+				}
+			},
+			"E": {
+				"final": false,
+				"transitions": {
+					"d": "D",
+					"c": "C",
+				}
+			}
+		}, "A");
+
+		console.log(automaton.state()); // ["E"]: A("") => E
+		console.log(automaton.input("d")); // ["D"]: E("d") => D
+		console.log(automaton.accepted()); // true: D is final state
+		console.log(automaton.input("B")); // []: No such transition, goes to null state
+		console.log(automaton.input("a")); // []: Null states have no transitions
+		console.log(automaton.nullState()); // []: Null states have no transitions
+		console.log(automaton.reset()); // ["E"]: Reset to original state A, A("") => E
+		console.log(automaton.input("d")); // ["D"]: E("d") => D
+		console.log(automaton.input("c")); // ["B", "D"]: D("c") => {B, D}
+		console.log(automaton.input("d")); // ["E", "D"]: B("d") => E, D("d") => D
+		console.log(automaton.accepted()); // true: D is final state
+		console.log(automaton.input("e")); // ["E"]: D("e") => E, E("e") => null
+		console.log(automaton.accepted()); // false: E is not a final state
+		console.log(automaton.reset()); // ["E"]: Reset to original state A, A("") => E
+		console.log(automaton.input("c")); // ["E"]: E("c") => C, C("") => A, A("") => E
+	</script>
+</body>
+</html>
