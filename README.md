@@ -10,6 +10,28 @@ your HTML `<head>` or `<body>`.
 * `.input(symbol)` - inputs a symbol to the state machine
 * `.reset()` - resets the machine
 * `.accepted()` - determines if at least one of the current states are final
+### Added as of version 1.1
+* `.nullState()` - determines if the machine is in null state
+* `.addState(id, isFinal, transitions)`
+* `.deleteState(id)`
+* `.addTransition(state_id_from, input_symbol, state_id_to)`
+* `.deleteTransition(state_id_from, input_symbol)`
+* `.hasTransition(state_id, input_symbol)`
+* `.hasTransitions(state_id)`
+#### Event related
+* `.bindStateEvent(state_id, type, fn)`
+
+`type` should be one of the following:
+- `arriving` - when state is becoming a current state
+- `arrive` - when state is a current state
+- `leaving` - when state is losing its current state status
+- `leave` - when state is no longer a current state
+
+* `.bindMachineEvent(type, fn)`
+
+`type` should be one of the following:
+- `changing` - when machine is changing state
+- `change` - when machine has changed state
 
 ## Initialization
 The syntax of the constructor is:

@@ -285,6 +285,16 @@
 						return true;
 				return false;
 			}
+			
+			/*
+			 * TODO for 1.2:
+			 * _rebindStateEvent()
+			 * _unbindStateEvent()
+			 * _rebindMachineEvent(type, old_fn, new_fn)
+			 * _unbindMachineEvent(type, fn)
+			 * _addDestStateToTransition(id, input)
+			 * _removeDestStateToTransition(from, input, to)
+			 */
 
 			function _bindStateEvent(stateId, type, fn) {
 				_states[stateId].events[type].push(fn);
