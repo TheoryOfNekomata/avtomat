@@ -4,8 +4,9 @@
  *    AVTOMAT - Non-deterministic Finite State Machine (with Empty Moves) Implementation                             *
  *  _______________________________________________________________________________________________________________  *
  *                                                                                                                   *
- *    Author: Temoto-kun                                                                                             *
- *    Date:   2013 December 13   08:50 [UTC+8]                                                                       *
+ *    Version: 1.0                                                                                                   *
+ *    Author:  Temoto-kun                                                                                            *
+ *    Date:    2013 December 13   08:50 [UTC+8]                                                                      *
  *                                                                                                                   *
  *  =============================================================================================================== **/
 
