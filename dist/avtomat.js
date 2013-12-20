@@ -4,8 +4,9 @@
  *    AVTOMAT - Non-deterministic Finite State Machine (with Empty Moves) Implementation                             *
  *  _______________________________________________________________________________________________________________  *
  *                                                                                                                   *
- *    Author: Temoto-kun                                                                                             *
- *    Date:   2013 December 13   08:50 [UTC+8]                                                                       *
+ *    Version: 1.1                                                                                                   *
+ *    Author:  Temoto-kun                                                                                            *
+ *    Date:    2013 December 13   08:50 [UTC+8]                                                                      *
  *                                                                                                                   *
  *  =============================================================================================================== **/
 
@@ -15,7 +16,6 @@
 		 * A non-deterministic finite state machine which supports empty moves for transitions.
 		 * @param states JSON object containing the states, and their details (is final state, transitions).
 		 * @param startState The ID of the start state
-		 * @returns {Avtomat.StateMachine} New instance of the Avtomat.StateMachine
 		 * @constructor
 		 */
 		StateMachine : function(states, startState) {
@@ -44,7 +44,15 @@
 				_cState = [_nullStateId],
 
 				// ID of the start state
-				_startStateId = startState || _nullStateId
+				_startStateId = startState || _nullStateId,
+
+		        // events triggered...
+			    _events = {
+				    // ... during state change
+					changing: [],
+				    // after state change
+					change: []
+				}
 				;
 
 			/* ------- *
@@ -60,6 +68,12 @@
 			 */
 			function _addTransition(idFrom, input, idTo) {
 				_states[idFrom].transitions[input] = idTo;
+			}
+
+			function _deleteTransition(id, input) {
+				// FIXME dunno what this does
+				// delete _states[idFrom].transitions[input];
+				_states[idFrom].transitions[input] = undefined;
 			}
 
 			/**
@@ -81,12 +95,17 @@
 
 					if(id != _nullStateId) {
 						_setFinal(id, isFinal);
-						for(var input in transitions) {
-							//noinspection JSUnfilteredForInLoop
-							_addTransition(id, input, transitions[input]);
-						}
+						if(transitions !== undefined)
+							for(var input in transitions)
+								_addTransition(id, input, transitions[input]);
 					}
 				}
+			}
+
+			function _deleteState(id) {
+				// FIXME dunno what this does
+				// delete _states[id];
+				_states[id] = undefined;
 			}
 
 			/**
@@ -95,7 +114,16 @@
 			 * @private
 			 */
 			function _createBlankState() {
-				return { final: false, transitions: [] };
+				return {
+					final: false,
+					transitions: [],
+					events: {
+						arriving: [],
+						arrive: [],
+						leaving: [],
+						leave: []
+					}
+				};
 			}
 
 			/**
@@ -135,7 +163,16 @@
 					newStates = [],
 
 					// If the new states have empty moves
-					haveEmptyMoves = false;
+					haveEmptyMoves = false,
+
+					events;
+
+				// Trigger machine state changing
+				events = _events.changing;
+
+				// Trigger leaving events
+				for(var e in events)
+					events[e]();
 
 				/*
 				 * _input operates with a queue as container for the state IDs for processing. It empties srcStates to
@@ -144,6 +181,12 @@
 				while(srcStates.length > 0) {
 					// Dequeue
 					var oldState = srcStates.shift();
+
+					events = _states[oldState].events.leaving;
+
+					// Trigger leaving events
+					for(e in events)
+						events[e]();
 
 					// Destination states (non-array), i.e. state ID strings by themselves
 					var destStateObjs = _states[oldState].transitions[input]
@@ -164,9 +207,26 @@
 						var containsState = false;
 						for(var k = 0, cStateLen = newStates.length; k < cStateLen; k++)
 							containsState = (containsState || (newStates[k] == destStates[j]));
-						if(!containsState && destStates[j] != _nullStateId)
+						if(!containsState && destStates[j] != _nullStateId) {
 							// Make sure the destination states don't duplicate. Null states are not included as well.
+
+							// Trigger leave events
+							events = _states[oldState].events.leave;
+							for(e in events)
+								events[e]();
+
+							// Trigger arriving events
+							events = _states[destStates[j]].events.arriving;
+							for(e in events)
+								events[e]();
+
 							newStates.push(destStates[j]);
+
+							// Trigger arrive events
+							events = _states[destStates[j]].events.arrive;
+							for(e in events)
+								events[e]();
+						}
 					}
 
 					// Terminate the state transitions when there are no explicitly-defined empty transitions
@@ -175,9 +235,16 @@
 				}
 				_cState = newStates;
 
+				// Trigger machine state changing
+				events = _events.change;
+
+				// Trigger leaving events
+				for(e in events)
+					events[e]();
+
 				// can't have empty moves when machine doesn't have current states
 				if(newStates.length > 0) {
-					for(var l in newStates) { //noinspection JSUnfilteredForInLoop
+					for(var l in newStates) {
 						if(_states[newStates[l]].transitions[_emptyInput] !== undefined) {
 							haveEmptyMoves = true;
 							break;
@@ -213,11 +280,55 @@
 			 * @private
 			 */
 			function _isAccepted() {
-				for(var i in _cState) {
-					//noinspection JSUnfilteredForInLoop
-					if(_states[_cState[i]].final)
+				for(var i in _cState)
+					if(_states[_cState[i]]["final"])
 						return true;
+				return false;
+			}
+			
+			/*
+			 * TODO for 1.2:
+			 * _rebindStateEvent()
+			 * _unbindStateEvent()
+			 * _rebindMachineEvent(type, old_fn, new_fn)
+			 * _unbindMachineEvent(type, fn)
+			 * _addDestStateToTransition(id, input)
+			 * _removeDestStateToTransition(from, input, to)
+			 */
+
+			function _bindStateEvent(stateId, type, fn) {
+				_states[stateId].events[type].push(fn);
+			}
+
+			function _bindMachineEvent(type, fn) {
+				_events[type].push(fn);
+			}
+
+			/*
+			function _hasTransitions(id) {
+				if(id == undefined)
+					id = _getCurrentStates();
+				else if(!(id instanceof Array))
+					id = [id];
+
+				var b = false;
+				for(var state in id) {
+					var t = 0;
+					for(var transitions in _states[id].transitions)
+						t++;
+					b = b || t > 0;
 				}
+				return b;
+			}
+			*/
+
+			function _hasTransition(id, input) {
+				return _states[id].transitions[input] !== undefined || input == _emptyInput;
+			}
+
+			function _hasTransitions(id) {
+				for(var transitions in _states[id].transitions)
+					return true;
 				return false;
 			}
 
@@ -232,9 +343,8 @@
 				_addState(_nullStateId, false, []);
 
 				if(states !== undefined)
-					for(var stateName in states) { //noinspection JSUnfilteredForInLoop
-						_addState(stateName, states[stateName].final, states[stateName].transitions);
-					}
+					for(var stateName in states)
+						_addState(stateName, states[stateName]["final"], states[stateName].transitions);
 
 				// Make the explicity-declared start state be startState
 				if(startState !== undefined)
@@ -255,38 +365,56 @@
 				 * Resets the machine.
 				 * @returns {Array} The current state
 				 */
-				reset: function() {
-					return _reset();
-				},
+				reset: _reset,
 
 				/**
 				 * Inputs a symbol to the machine.
 				 * @param i The input symbol
 				 * @returns {Array} The resulting state
 				 */
-				input: function(i) {
-					return _input(i);
-				},
+				input: _input,
 
 				/**
 				 * Gets the current state(s).
 				 * @returns {Array} The IDs of the current state(s)
 				 */
-				state: function() {
-					return _getCurrentStates();
-				},
+				state: _getCurrentStates,
 
 				/**
 				 * Determines if the current state is a final state.
 				 * @returns {boolean} Is current state a final state?
 				 */
-				accepted: function() {
-					return _isAccepted();
-				},
+				accepted: _isAccepted,
 				
 				nullState: function() {
 					return _getCurrentStates().length == 0;
-				}
+				},
+
+				addState: _addState,
+
+				deleteState: _deleteState,
+
+				addTransition: _addTransition,
+
+				deleteTransition: _deleteTransition,
+
+				hasTransition: _hasTransition,
+
+				hasTransitions: function(id) {
+					if(id == undefined)
+						id = _getCurrentStates();
+					else if(id instanceof Array) {
+						var b = false;
+						for(var state in id)
+							b = b || _hasTransitions[state];
+						return b;
+					}
+					return typeof(id) == "string" && _hasTransitions(id);
+				},
+
+				bindStateEvent: _bindStateEvent,
+
+				bindMachineEvent: _bindMachineEvent
 			};
 		}
 	};

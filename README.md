@@ -10,7 +10,7 @@ your HTML `<head>` or `<body>`.
 * `.input(symbol)` - inputs a symbol to the state machine
 * `.reset()` - resets the machine
 * `.accepted()` - determines if at least one of the current states are final
-### Added as of version 1.1
+### Added as of version **1.1** *(See changelog.md)*
 * `.nullState()` - determines if the machine is in null state
 * `.addState(id, isFinal, transitions)`
 * `.deleteState(id)`
