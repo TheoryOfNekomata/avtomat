@@ -6,11 +6,14 @@ Add `<script type="text/javascript" src="path/to/scripts/avtomat-1.0.js">` in
 your HTML `<head>` or `<body>`.
 
 ## Reference
+
+### From version 1.0
 * `.state()` - gets the current state
 * `.input(symbol)` - inputs a symbol to the state machine
 * `.reset()` - resets the machine
 * `.accepted()` - determines if at least one of the current states are final
-### Added as of version **1.1** *(See changelog.md)*
+
+### Added as of version 1.1 *(See changelog.md)*
 * `.nullState()` - determines if the machine is in null state
 * `.addState(id, isFinal, transitions)`
 * `.deleteState(id)`
@@ -18,6 +21,7 @@ your HTML `<head>` or `<body>`.
 * `.deleteTransition(state_id_from, input_symbol)`
 * `.hasTransition(state_id, input_symbol)`
 * `.hasTransitions(state_id)`
+
 #### Event related
 * `.bindStateEvent(state_id, type, fn)`
 
