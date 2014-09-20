@@ -31,29 +31,51 @@
 			 * ------ */
 
  			var
-				// The states
+                /**
+                 * The states
+                 * @type {Object[]}
+                 * @private
+                 */
 				_states = [],
 
-				// The ID for the "null" state
+                /**
+                 * The ID for the "null" state
+                 * @type {Object|null}
+                 * @private
+                 */
 				_nullStateId = null,
 
-				// The string for the empty input
+                /**
+                 * The string for the empty input
+                 * @type {string}
+                 * @private
+                 */
 				_emptyInput = "",
 
-				// IDs of the current state
+                /**
+                 * IDs of the current state
+                 * @type {Object[]}
+                 * @private
+                 */
 				_cState = [_nullStateId],
 
-				// ID of the start state
+                /**
+                 * ID of the start state
+                 * @type {Object|null}
+                 */
 				_startStateId = startState || _nullStateId,
 
-		        // events triggered...
+                /**
+                 * Events triggered during and after state change.
+                 * @type {{changing: Array, change: Array}}
+                 * @private
+                 */
 			    _events = {
-				    // ... during state change
+				    // during state change
 					changing: [],
 				    // after state change
 					change: []
-				}
-				;
+				};
 
 			/* ------- *
 			 * Methods *
@@ -70,10 +92,14 @@
 				_states[idFrom].transitions[input] = idTo;
 			}
 
+            /**
+             * Deletes a transition from one state to another.
+             * @param id The ID of the source state
+             * @param input The input symbol
+             * @private
+             */
 			function _deleteTransition(id, input) {
-				// FIXME dunno what this does
-				// delete _states[idFrom].transitions[input];
-				_states[idFrom].transitions[input] = undefined;
+				delete _states[id].transitions[input];
 			}
 
 			/**
@@ -86,26 +112,52 @@
 			 * @private
 			 */
 			function _addState(id, isFinal, transitions) {
+                /*
+                 * `_addState()` works by creating a state labeled `id` given that the machine does not have a state
+                 * with the same name...
+                 */
 				if(_states[id] === undefined) {
 					if(_startStateId == _nullStateId)
-						// make the first non-null state to be startState, given that there
+
+						/*
+						 * Start state is the null state (matched against their IDs).
+						 *
+						 * Make the first non-null state to be the start state, given that the machine has no states
+						 * yet.
+						 */
 						_setStartState(id);
 
+                    // Create the new state labeled `id`
 					_states[id] = _createBlankState();
 
 					if(id != _nullStateId) {
+
+                        /*
+                         * If this is the only state in the machine, determine if this is a final state or not
+                         * (`isFinal`), given that it is a non-null state.
+                         */
 						_setFinal(id, isFinal);
+
+                        // Given the transitions, map it out
 						if(transitions !== undefined)
 							for(var input in transitions)
 								_addTransition(id, input, transitions[input]);
-					}
-				}
+
+					} // end if(id != _nullStateId)
+				} // end if(_states[id] === undefined)
+
+                /*
+                 * ...else does nothing
+                 */
 			}
 
+            /**
+             * Deletes a state.
+             * @param id The ID of the state
+             * @private
+             */
 			function _deleteState(id) {
-				// FIXME dunno what this does
-				// delete _states[id];
-				_states[id] = undefined;
+				delete _states[id];
 			}
 
 			/**
@@ -115,12 +167,24 @@
 			 */
 			function _createBlankState() {
 				return {
+                    // Is state final by default?
 					final: false,
+
+                    // State transitions
 					transitions: [],
+
+                    // State change events
 					events: {
+                        // Events triggered DURING transition TO this state.
 						arriving: [],
+
+                        // Events triggered ON COMPLETION OF transition TO this state.
 						arrive: [],
+
+                        // Events triggered DURING transition FROM this state.
 						leaving: [],
+
+                        // Events triggered ON COMPLETION OF transition FROM this state.
 						leave: []
 					}
 				};
@@ -134,6 +198,7 @@
 			 */
 			function _setFinal(id, bFinal) {
 				if(id != _nullStateId)
+                    // By default, Avtomat does not accept null states to be final states.
 					_states[id].final = bFinal;
 			}
 
@@ -143,8 +208,12 @@
 			 * @private
 			 */
 			function _reset() {
+                // Return current state to state state
 				_cState = [_startStateId];
+
+                // Input an empty string for empty moves from initial state
 				_input("");
+
 				return _cState;
 			}
 
@@ -165,26 +234,25 @@
 					// If the new states have empty moves
 					haveEmptyMoves = false,
 
+                    // Events
 					events;
 
 				// Trigger machine state changing
 				events = _events.changing;
-
-				// Trigger leaving events
 				for(var e in events)
 					events[e]();
 
 				/*
-				 * _input operates with a queue as container for the state IDs for processing. It empties srcStates to
-				 * make sure all the states will receive the input.
+				 * `_input()` operates with a queue as container for the state IDs for processing. It empties srcStates
+				 * to make sure all the states will receive the input.
 				 */
 				while(srcStates.length > 0) {
+
 					// Dequeue
 					var oldState = srcStates.shift();
 
+                    // Trigger state leaving events
 					events = _states[oldState].events.leaving;
-
-					// Trigger leaving events
 					for(e in events)
 						events[e]();
 
@@ -280,6 +348,7 @@
 			 * @private
 			 */
 			function _isAccepted() {
+                // Look into all the current states and see if they are final
 				for(var i in _cState)
 					if(_states[_cState[i]]["final"])
 						return true;
@@ -385,7 +454,11 @@
 				 * @returns {boolean} Is current state a final state?
 				 */
 				accepted: _isAccepted,
-				
+
+                /**
+                 * Determines if the list of current states is empty.
+                 * @returns {boolean}
+                 */
 				nullState: function() {
 					return _getCurrentStates().length == 0;
 				},
