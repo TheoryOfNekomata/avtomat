@@ -24,27 +24,23 @@ where:
 
 The `states` object has this following structure:
 
+```javascript
     {
         stateID: {
             "final": stateFinal,
             "transitions": {
                 inputSymbol: stateID,
                 inputSymbol: stateID,
-                .
-                .
-                .
+                // more transitions...
                 inputSymbol: stateID,
             }
         },
         stateID: {
-            .
-            .
-            .
+        	// ...
         },
-        .
-        .
-        .
+        // more states...
     }
+```
 
 where:
 
@@ -54,6 +50,7 @@ where:
 
 To initialize an instance of the state machine object:
 
+```javascript
 	var foo = new Avtomat.StateMachine({
 		"stateName": {
 			"final": false // boolean
@@ -61,11 +58,12 @@ To initialize an instance of the state machine object:
 				// stateSymbol could be integer, float, or string
 				"stateSymbol": "anotherStateName",
 				"stateSymbol2": ["stateName1", "stateName2"],
-				...
-				"": "stateName3" // for the empty (epsilon) moves, put an empty string
+				//...
+				"": "stateName3" // for the empty (epsilon) moves, put a zero-length string for input
 			}
 		}
 	}, "stateName"); // stateName is the start state
+```
 
 ## API
 
@@ -101,6 +99,7 @@ State-bound events take higher priority than machine-bound events.
 
 ## Example
 
+```javascript
 	var automaton = new Avtomat.StateMachine({
 		"A": {
 			"final": false, "transitions": {
@@ -157,3 +156,4 @@ State-bound events take higher priority than machine-bound events.
 	automaton.accepted(); // false: E is not a final state
 	automaton.reset(); // ["E"]: Reset to original state A, A("") => E
 	automaton.input("c"); // ["E"]: E("c") => C, C("") => A, A("") => E
+```
