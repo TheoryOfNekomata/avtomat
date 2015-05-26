@@ -6,7 +6,10 @@
     "Allan Crisostomo <kiiroifuriku@hotmail.com>"
   ],
   "description": "Non-deterministic finite state machine (with empty moves) implementation",
-  "main": "dist/avtomat.js",
+  "main": [
+    "dist/avtomat.js",
+    "dist/avtomat.min.js"
+  ],
   "moduleType": [
     "globals",
     "node"
