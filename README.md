@@ -26,7 +26,7 @@ The `states` object has this following structure:
 
     {
         stateID: {
-            "final": <boolean>,
+            "final": stateFinal,
             "transitions": {
                 inputSymbol: stateID,
                 inputSymbol: stateID,
@@ -49,8 +49,8 @@ The `states` object has this following structure:
 where:
 
 * `stateID` is a string which acts as identifier for a state
-* `<boolean>` is a Boolean value of `true` or `false`
-* `inputSymbol` is a string or a number (probably objects as well)
+* `stateFinal` is a Boolean value
+* `inputSymbol` is any object
 
 To initialize an instance of the state machine object:
 
@@ -62,11 +62,10 @@ To initialize an instance of the state machine object:
 				"stateSymbol": "anotherStateName",
 				"stateSymbol2": ["stateName1", "stateName2"],
 				...
-				"": "stateName3" // for the empty moves, put an empty string
+				"": "stateName3" // for the empty (epsilon) moves, put an empty string
 			}
 		}
-	}, "stateName2"); // stateName2 is the start state
-
+	}, "stateName"); // stateName is the start state
 
 ## API
 
