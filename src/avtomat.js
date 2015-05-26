@@ -446,7 +446,7 @@
 				state: _getCurrentStates,
 
 				/**
-				 * Determines if the current state is a final state.
+				 * Determines if at least one of the current states is a final state.
 				 * @returns {boolean} Is current state a final state?
 				 */
 				accepted: _isAccepted,
