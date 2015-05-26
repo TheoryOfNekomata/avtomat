@@ -1,0 +1,29 @@
+{
+  "name": "avtomat",
+  "version": "1.1.1",
+  "homepage": "https://github.com/Temoto-kun/avtomat",
+  "authors": [
+    "Allan Crisostomo <kiiroifuriku@hotmail.com>"
+  ],
+  "main": "dist/avtomat.js",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "automaton",
+    "finite-state",
+    "machine",
+    "deterministic",
+    "non-deterministic",
+    "input"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

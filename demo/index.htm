@@ -1,0 +1,76 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Avtomat | Demo</title>
+	<link rel="stylesheet" type="text/css" href="css/normalize.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body>
+	<div class="input-area">
+		<div class="content">
+			<h1>Avtomat</h1>
+
+			<p class="directions">
+				<label for="inputText">
+					Type a string that
+					<strong>contains only numbers from 1&ndash;5</strong>,<br>
+					<strong>begins with 3</strong>,
+					<strong>and ends in either 2 or 4</strong>.
+				</label>
+			</p>
+
+			<form method="get" name="input" id="input" onsubmit="displayInputCheck(event)">
+				<input type="text" id="inputText" placeholder="Type your input here." onkeypress="resetOutput()">
+			</form>
+		</div>
+	</div>
+	<div class="output-area">
+		<div class="content">
+			<div class="pointer"></div>
+
+			<output id="outputText" style="color: #9999ff"></output>
+			<label for="outputText">Result</label>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="../dist/avtomat.min.js"></script>
+	<script type="text/javascript">
+		var automaton = new Avtomat.StateMachine({
+			"start": { "final": false, "transitions": { "3": "three" } },
+			"one": { "final": false, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } },
+			"two": { "final": true, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } },
+			"three": { "final": false, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } },
+			"four": { "final": true, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } },
+			"five": { "final": false, "transitions": { "1": "one", "2": "two", "3": "three", "4": "four", "5": "five" } }
+		});
+		
+		function checkInput(inputStr) {
+			automaton.reset();
+			for(var i = 0; i < inputStr.length; i++)
+				automaton.input(inputStr.charAt(i));
+			return automaton.accepted();
+		}
+
+		function resetOutput() {
+			var outputElement = document.getElementById("outputText");
+
+			outputElement.style.color = "#9999ff";
+			outputElement.innerHTML = "Press Enter to check.";
+		}
+		
+		function displayInputCheck(e) {
+			e.preventDefault();
+			var outputElement = document.getElementById("outputText");
+			var inputElement = document.getElementById("inputText");
+
+			var accepted = checkInput(inputElement.value);
+
+			outputElement.style.color = (accepted ? "#009900" : "#990000");
+			outputElement.innerHTML = (accepted ? "String is accepted.": "String is rejected.");
+		}
+
+		resetOutput();
+	</script>
+</body>
+</html>
