@@ -86,24 +86,19 @@ To initialize an instance of the state machine object:
 
 ### Event related
 
-	bindStateEvent(stateId, type, fn)
-
-`type` should be one of the following:
+Bind state events with `bindStateEvent(stateId, type, fn)`. `type` should be one of the following:
 
 * `"arriving"` - when state is becoming a current state
 * `"arrive"` - when state is a current state
 * `"leaving"` - when state is losing its current state status
 * `"leave"` - when state is no longer a current state
 
-
-
-
-	bindMachineEvent(type, fn)
-
-`type` should be one of the following:
+Bind machine events with `bindMachineEvent(type, fn)`. `type` should be one of the following:
 
 * `"changing"` - when machine is changing state
 * `"change"` - when machine has changed state
+
+State-bound events take higher priority than machine-bound events.
 
 ## Example
 
