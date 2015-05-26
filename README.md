@@ -15,7 +15,9 @@ NPM:
 
 The syntax of the constructor is:
 
+```javascript
     Avtomat.StateMachine(states, startState)
+```
 
 where:
 
@@ -27,8 +29,8 @@ The `states` object has this following structure:
 ```javascript
     {
         stateID: {
-            "final": stateFinal,
-            "transitions": {
+            final: stateFinal,
+            transitions: {
                 inputSymbol: stateID,
                 inputSymbol: stateID,
                 // more transitions...
@@ -53,11 +55,11 @@ To initialize an instance of the state machine object:
 ```javascript
 	var foo = new Avtomat.StateMachine({
 		"stateName": {
-			"final": false // boolean
-			"transitions": {
+			final: false // boolean
+			transitions: {
 				// stateSymbol could be integer, float, or string
-				"stateSymbol": "anotherStateName",
-				"stateSymbol2": ["stateName1", "stateName2"],
+				stateSymbol: "anotherStateName",
+				stateSymbol2: ["stateName1", "stateName2"],
 				//...
 				"": "stateName3" // for the empty (epsilon) moves, put a zero-length string for input
 			}
@@ -102,7 +104,7 @@ State-bound events take higher priority than machine-bound events.
 ```javascript
 	var automaton = new Avtomat.StateMachine({
 		"A": {
-			"final": false, "transitions": {
+			final: false, transitions: {
 				"b": "B",
 				"c": ["C", "D"],
 				"d": "A",
@@ -110,21 +112,21 @@ State-bound events take higher priority than machine-bound events.
 			}
 		},
 		"B": {
-			"final": false, "transitions": {
+			final: false, transitions: {
 				"a": "A",
 				"c": "C",
 				"d": "E"
 			}
 		},
 		"C": {
-			"final": false,
-			"transitions": {
+			final: false,
+			transitions: {
 				"": "A"
 			}
 		},
 		"D": {
-			"final": true,
-			"transitions": {
+			final: true,
+			transitions: {
 				"a": "D",
 				"b": "E",
 				"c": ["B", "D"],
@@ -133,8 +135,8 @@ State-bound events take higher priority than machine-bound events.
 			}
 		},
 		"E": {
-			"final": false,
-			"transitions": {
+			final: false,
+			transitions: {
 				"d": "D",
 				"c": "C",
 			}
