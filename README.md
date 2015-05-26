@@ -95,7 +95,8 @@ To initialize an instance of the state machine object:
 * `"leaving"` - when state is losing its current state status
 * `"leave"` - when state is no longer a current state
 
-	.bindMachineEvent(type, fn)
+
+	bindMachineEvent(type, fn)
 
 `type` should be one of the following:
 
@@ -160,4 +161,3 @@ To initialize an instance of the state machine object:
 	automaton.accepted(); // false: E is not a final state
 	automaton.reset(); // ["E"]: Reset to original state A, A("") => E
 	automaton.input("c"); // ["E"]: E("c") => C, C("") => A, A("") => E
- 
