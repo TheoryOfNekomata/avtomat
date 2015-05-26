@@ -96,6 +96,8 @@ To initialize an instance of the state machine object:
 * `"leave"` - when state is no longer a current state
 
 
+
+
 	bindMachineEvent(type, fn)
 
 `type` should be one of the following:
