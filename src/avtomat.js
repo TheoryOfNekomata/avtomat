@@ -79,12 +79,13 @@
 					changing: [],
 					// after state change
 					change: []
-				},
+				};
 
 			/* ------- *
 			 * Methods *
 			 * ------- */
 
+			var
 				_executeEvents = function _executeEvents(eventArray) {
 					for(var e in eventArray) {
 						if(eventArray.hasOwnProperty(e)) {
