@@ -7,10 +7,6 @@ Bower:
 
 	$ bower install --save avtomat
 
-NPM:
-
-	$ npm install --save avtomat
-
 ## Usage
 
 The syntax of the constructor is:
@@ -28,16 +24,18 @@ The `states` object has this following structure:
 
 ```javascript
     {
-        stateID: {
-            final: stateFinal,
-            transitions: {
-                inputSymbol: stateID,
-                inputSymbol: stateID,
+        "stateID1": {
+            "final": stateFinal, // Boolean
+            "transitions": {
+            	// stateSymbol could be integer, float, or string
+                "inputSymbol1": "stateID1",
+                "inputSymbol2": "stateID2",
                 // more transitions...
-                inputSymbol: stateID,
+                "inputSymbol3": ["stateID1", "stateID2"], // NFA machine can have two or more destination states
+                "": "stateName3" // for the empty (epsilon) moves, put a zero-length string for input
             }
         },
-        stateID: {
+        "stateID2": {
         	// ...
         },
         // more states...
@@ -48,34 +46,18 @@ where:
 
 * `stateID` is a string which acts as identifier for a state
 * `stateFinal` is a Boolean value
-* `inputSymbol` is any object
-
-To initialize an instance of the state machine object:
-
-```javascript
-	var foo = new Avtomat.StateMachine({
-		"stateName": {
-			final: false // boolean
-			transitions: {
-				// stateSymbol could be integer, float, or string
-				stateSymbol: "anotherStateName",
-				stateSymbol2: ["stateName1", "stateName2"],
-				//...
-				"": "stateName3" // for the empty (epsilon) moves, put a zero-length string for input
-			}
-		}
-	}, "stateName"); // stateName is the start state
-```
+* `inputSymbol` is any object (recommended is a single character)
 
 ## API
 
 | Method                                     | Description                                                        |
 |--------------------------------------------|--------------------------------------------------------------------|
-| `state()`                                  | Gets the current state(s).                                         |
+| `getCurrentStates()`                       | Gets the machine's current state(s).                               |
+| `getAllStates()`                           | Gets all the machine's state(s).                                   |
 | `input(symbol)`                            | Inputs a symbol to the machine.                                    |
 | `reset()`                                  | Resets the machine.                                                |
-| `accepted()`                               | Determines if at least one of the current states is a final state. |
-| `nullState()`                              | Determines if the list of current states is empty.                 |
+| `isStateAccepted()`                        | Determines if at least one of the current states is a final state. |
+| `isStateNull()`                            | Determines if the list of current states is empty.                 |
 | `addState(id, isFinal, transitions)`       | Adds a state to the machine.                                       |
 | `deleteState(id)`                          | Deletes a state from the machine.                                  |
 | `addTransition(idFrom, inputSymbol, idTo)` | Adds a transition from one state to another.                       |
@@ -147,7 +129,12 @@ State-bound events take higher priority than machine-bound events.
 	automaton.input("d"); // ["D"]: E("d") => D
 	automaton.accepted(); // true: D is final state
 	automaton.input("B"); // []: No such transition, goes to null state
-	automaton.input("a"); // []: Null states have no transitions
+
+	try {
+		automaton.input("a"); // []: Null states have no transitions, throws exceptions
+	} catch(e) {
+	}
+
 	automaton.nullState(); // true
 	automaton.reset(); // ["E"]: Reset to original state A, A("") => E
 	automaton.input("d"); // ["D"]: E("d") => D

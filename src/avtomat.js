@@ -168,6 +168,10 @@
 					 */
 				},
 
+				_getAllStates = function _getAllStates() {
+					return _states.slice(0);
+				},
+
 				/**
 				 * Deletes a state.
 				 * @param id The ID of the state
@@ -282,17 +286,35 @@
 							destStates = [destStateObjs];
 						}
 
-						// Determine the destination states
-						for(var j = 0; j < destStates.length; j++) {
-							var containsState = false;
-							for(var k = 0, cStateLen = newStates.length; k < cStateLen; k++) {
+						var j, k, cStateLen, containsState;
+
+						// Check states...
+						for(j = 0; j < destStates.length; j++) {
+							containsState = false;
+							for(k = 0, cStateLen = newStates.length; k < cStateLen; k++) {
 								containsState = (containsState || (newStates[k] === destStates[j]));
 							}
-							if(!containsState && destStates[j] !== _nullStateId) {
+							if(!containsState) {
+								// ...if one of them is null
+								if(destStates[j] === _nullStateId) {
+									throw new Error("Input from null state.");
+								}
+							}
+						}
+
+						// Determine the destination states
+						for(j = 0; j < destStates.length; j++) {
+							containsState = false;
+							for(k = 0, cStateLen = newStates.length; k < cStateLen; k++) {
+								containsState = (containsState || (newStates[k] === destStates[j]));
+							}
+							if(!containsState) {
 								// Make sure the destination states don't duplicate. Null states are not included as well.
 
 								// Trigger leave events
 								_executeEvents(_states[oldState].events.leave);
+
+								// TODO throw exception when dest is null
 
 								// Trigger arriving events
 								_executeEvents(_states[destStates[j]].events.arriving);
@@ -363,6 +385,11 @@
 					return false;
 				},
 
+				/**
+				 * Determines if the list of current states is empty.
+				 * @returns {boolean} Is current state null?
+				 * @private
+				 */
 				_nullState = function _nullState() {
 					return _cState.length === 0;
 				},
@@ -387,11 +414,11 @@
 
 				_hasTransition = function _hasTransition(id, input) {
 					return _states[id].transitions[input] !== "undefined" || input === _emptyInput;
-				};
+				},
 
-				function _hasTransitions(id) {
+				_hasTransitions = function _hasTransitions(id) {
 					return _states[id].transitions.length > 0;
-				}
+				};
 
 
 			/* =========== *
@@ -440,22 +467,28 @@
 				input: _input,
 
 				/**
-				 * Gets the current state(s).
+				 * Gets the machine's current state(s).
 				 * @returns {Array} The IDs of the current state(s)
 				 */
-				state: _getCurrentStates,
+				getCurrentStates: _getCurrentStates,
+
+				/**
+				 * Gets all the machine's state(s).
+				 * @returns {Array} Array of objects representing all the machine's state(s)
+				 */
+				getAllStates: _getAllStates,
 
 				/**
 				 * Determines if at least one of the current states is a final state.
 				 * @returns {boolean} Is current state a final state?
 				 */
-				accepted: _isAccepted,
+				isStateAccepted: _isAccepted,
 
 				/**
 				 * Determines if the list of current states is empty.
 				 * @returns {boolean} Is machine in a null state?
 				 */
-				nullState: _nullState,
+				isStateNull: _nullState,
 
 				/**
 				 * Adds a state to the machine.
